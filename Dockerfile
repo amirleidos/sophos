@@ -3,6 +3,8 @@
 ####################################################
 FROM golang:1.11 as go_builder
 
+
+
 COPY . /go/src/github.com/malice-plugins/sophos
 WORKDIR /go/src/github.com/malice-plugins/sophos
 RUN go get -u github.com/golang/dep/cmd/dep && dep ensure
@@ -27,13 +29,14 @@ RUN groupadd -r malice \
   && mkdir /malware \
   && chown -R malice:malice /malware
 
+COPY ./sophos-downloads/sav-linux-free-9.tgz /tmp/sav-linux-free-9.tgz
 # Install Requirements
 RUN buildDeps='wget ca-certificates' \
   && DEBIAN_FRONTEND=noninteractive apt-get update -qq \
   && apt-get install -yq $buildDeps \
   && echo "===> Install Sophos..." \
   && cd /tmp \
-  && wget -q https://github.com/maliceio/malice-av/raw/master/sophos/sav-linux-free-9.tgz \
+  && ls -al \
   && tar xzvf sav-linux-free-9.tgz \
   && ./sophos-av/install.sh /opt/sophos --update-free --acceptlicence --autostart=False --enableOnBoot=False --automatic --ignore-existing-installation --update-source-type=s \
   && echo "===> Update Sophos..." \
